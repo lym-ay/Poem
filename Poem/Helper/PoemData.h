@@ -9,14 +9,11 @@
 #import <Foundation/Foundation.h>
 
 @interface PoemData : NSObject
-@property (nonatomic,copy) NSString *dbName;
-@property (nonatomic,copy) NSString *tableName;
- 
-- (NSDictionary *)searchTitle:(NSString*)title;
++ (PoemData*)sharedPoemData;
+- (NSArray *)searchTitle:(NSString*)title;//通过名称查询诗歌
 
 
-//查询表是否存在
-- (int)isExistTable:(NSString *)tableName;
+
 @end
 
 

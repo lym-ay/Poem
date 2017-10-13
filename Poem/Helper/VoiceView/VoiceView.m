@@ -11,6 +11,7 @@
 #import "OlamiRecognizer.h"
 #import "YSCVolumeQueue.h"
 #import "YSCVoiceWaveView.h"
+#import "PoemData.h"
 
 #define OLACUSID   @"11a4afa5-d461-47f6-917b-8f8eaa9cb526"
 
@@ -28,15 +29,16 @@ typedef NS_ENUM(NSInteger, ProgramType) {
     
 }
 
-@property (strong, nonatomic) NSMutableArray *slotValue;//保存slot的值
+
 @property (strong, nonatomic) NSMutableDictionary *slotDic;//保存slot的值
-@property (copy, nonatomic) NSString *api;
+@property (copy, nonatomic)   NSString *api;
 @property (assign, nonatomic) long start_time;
 @property (assign, nonatomic) long end_time;
 
 
 @property (nonatomic, strong) YSCVoiceWaveView *voiceWaveView;
 @property (nonatomic,strong)  UIView *voiceWaveParentView;
+@property (nonatomic, strong) PoemData *poemData;
 
 
 @end
@@ -70,11 +72,11 @@ typedef NS_ENUM(NSInteger, ProgramType) {
                                   api:@"asr" appSecret:@"31ed879d6d154823bf8fe94ef622a855" cusid:OLACUSID];
     
     [olamiRecognizer setLocalization:LANGUAGE_SIMPLIFIED_CHINESE];//设置语系，这个必须在录音使用之前初始化
-    
-    _slotValue = [[NSMutableArray alloc] init];
     _slotDic = [[NSMutableDictionary alloc] init];
-    //接受搜索框发过来的文本
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(searchText:) name:@"searchText" object:nil];
+    
+    _poemData =[[PoemData alloc] init];
+   
+    
 }
 
 
@@ -187,16 +189,18 @@ typedef NS_ENUM(NSInteger, ProgramType) {
 
 //处理modify
 - (void)processModify:(NSString*) str {
-    NSDictionary *resultDic;//保存传输的结果
-    if ([str isEqualToString:@"query_parade_name"]
+    
+    if ([str isEqualToString:@"play"]
         || [str isEqualToString:@"watch_channel"]
-       ) {//查看那个频道
-        NSString *channelName = _slotValue[0];
-        if (channelName) {
-            resultDic = @{@"channel":channelName};
-            
-            
-            
+       ) {//我要听XXX这首诗
+        if (_slotDic.count != 0) {
+            for (NSString *name in _slotDic.allKeys) {
+                if ([name isEqualToString:@"poem"]) {
+                    NSString *value = [_slotDic objectForKey:name];
+                    NSArray * arry =[[PoemData sharedPoemData] searchTitle:value];
+                    [self.delegate onResult:arry];
+                }
+            }
         }
        
        
@@ -210,20 +214,10 @@ typedef NS_ENUM(NSInteger, ProgramType) {
               [str isEqualToString:@"query_tvplay_play"]
               ){//询问分类
         if (_slotDic.count != 0) {
-            for (NSString *name in _slotDic.allKeys) {
-                //节目分类
-                if ([name isEqualToString:@"type"]) {//我要看言情剧
-                    NSString *value = [_slotDic objectForKey:name];
-                    resultDic = @{@"program_subtype":value};
-                    
-                }else if ([name isEqualToString:@"area"]) {//我要看美剧之类的，按照地区分类
-                    NSString *value = [_slotDic objectForKey:name];
-                    resultDic = @{@"program_subtype":value};
-                }
-            }
+           
         }else{//我要看电视剧之类的大分类
-            resultDic = @{@"program_type":@"电视剧"};
         }
+            
         
         
     }
@@ -234,26 +228,12 @@ typedef NS_ENUM(NSInteger, ProgramType) {
              [str isEqualToString:@"recommend_new_tvshow"]||
              [str isEqualToString:@"query_tvshow_play"]){
         if (_slotDic.count != 0) {
-            for (NSString *name in _slotDic.allKeys) {
-                //节目分类
-                if ([name isEqualToString:@"program_classify"]) {
-                    NSString *value = [_slotDic objectForKey:name];
-                    resultDic = @{@"program_subtype":value};
-                }
-            }
+            
         }
         
     }else if ([str isEqualToString:@"query_tvshow_play"]){
         if (_slotDic.count != 0) {
             for (NSString *name in _slotDic.allKeys) {
-                //节目分类
-                if ([name isEqualToString:@"program_classify"]) {//分类
-                    NSString *value = [_slotDic objectForKey:name];
-                    resultDic = @{@"program_subtype":value};
-                }else if ([name isEqualToString:@"area"]) {//我要看美剧之类的，按照地区分类
-                    NSString *value = [_slotDic objectForKey:name];
-                    resultDic = @{@"program_subtype":value};
-                }
             }
         }
     }
@@ -284,25 +264,24 @@ typedef NS_ENUM(NSInteger, ProgramType) {
     }else if ([str isEqualToString:@"turn_volume_muteon"]){//设为静音
         
     }
-    ///////////////按照时间段来查询节目////////////////////
+  
     else if ([str isEqualToString:@"query_parade_name_time"]){
         
     }
-    //////////////菜单功能////////////////////
+    
     else if ([str isEqualToString:@"function"]){
         
     }
-  //////////////电影/////////////
+  
     else if ([str isEqualToString:@"query_movie"]||
              [str isEqualToString:@"recommend"]||
              [str isEqualToString:@"recommend_new "]||
              [str isEqualToString:@"recommend_cinema"]||
              [str isEqualToString:@"can"]){
-        resultDic = @{@"program_type":@"电影"};
+        
     }
    
-    //把识别的结果发出去
-    [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:@"voiceValue" object:resultDic userInfo:nil]];
+    
 
     
 }
@@ -334,29 +313,14 @@ typedef NS_ENUM(NSInteger, ProgramType) {
     }
     
     NSArray *slot = [semanticDic objectForKey:@"slots"];
-    [_slotValue removeAllObjects];
+    
     [_slotDic removeAllObjects];
     if (slot.count != 0) {
         for (NSDictionary *dic in slot) {
             NSString* name = [dic objectForKey:@"name"];
             NSString* val = [dic objectForKey:@"value"];
             [_slotDic setObject:val forKey:name];//保存slot的值和value
-            [_slotValue addObject:val];
-            NSDictionary *datetime = [dic objectForKey:@"datetime"];
-            if (datetime) {
-                NSString *type = [datetime objectForKey:@"type"];
-                if ([type isEqualToString:@"time_recommend"]) {
-                    
-                }
-                
-                NSDictionary *data = [datetime objectForKey:@"data"];
-                _start_time = [[data objectForKey:@"start_time"] longValue];
-                _end_time = [[data objectForKey:@"end_time"] longValue];
-                
-            }
-        }
-        
-        
+       }
         
     }
     

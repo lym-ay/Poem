@@ -23,9 +23,8 @@ fprintf(stderr,"%s %s:%d %s\n",[str UTF8String], [[[NSString stringWithUTF8Strin
 }
 
 
-@interface PoemData(){
-   
-}
+@interface PoemData()
+@property (nonatomic,copy) NSString *tableName;
 
 
 @end
@@ -33,11 +32,20 @@ fprintf(stderr,"%s %s:%d %s\n",[str UTF8String], [[[NSString stringWithUTF8Strin
 @implementation PoemData
 
 #pragma mark - 单例
++ (PoemData*)sharedPoemData {
+    static PoemData *help = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        help = [[PoemData alloc] init];
+    });
+    return help;
+}
 
 - (id)init {
     if (self = [super init]) {
         //把数据库拷贝到相应的目录下
         [self copyDB];
+        _tableName = @"PoemTable";
     }
     
     return self;
@@ -87,15 +95,10 @@ fprintf(stderr,"%s %s:%d %s\n",[str UTF8String], [[[NSString stringWithUTF8Strin
 
 
 
-- (NSDictionary *)searchTitle:(NSString*)title{
-    NSString *searchSql = [NSString stringWithFormat:@"select title,content,explanation,appreciation,author from '%@' where title like  '%@'",_tableName,title];
+- (NSArray *)searchTitle:(NSString*)title{
+    NSString *searchSql = [NSString stringWithFormat:@"select title,content,explanation,appreciation,author from '%@' where title like  '%%%@%%'limit 10",_tableName,title];
     NSArray *arry = [[FMDBHelp sharedFMDBHelp] qureyWithSql:searchSql];
-    NSDictionary *dic = nil;
-    if (arry.count != 0) {
-        dic = arry[0];
-    }
-    //NSLog(@"result is %@",dic);
-    return dic;
+    return arry;
 }
 
 - (int)isExistTable:(NSString *)tableName {

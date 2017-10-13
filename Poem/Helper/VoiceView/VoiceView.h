@@ -13,7 +13,7 @@
 @protocol VoiceViewDelegate <NSObject>
 
 //返回结果
-//- (void)onResult:(NSData*)result;
+- (void)onResult:(NSArray*)result;
 
 //取消本次会话
 - (void)onCancel;

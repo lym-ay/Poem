@@ -25,7 +25,6 @@
 		32B0B0521F8DFD6800B0FA9E /* firstLine.png in Resources */ = {isa = PBXBuildFile; fileRef = 32B0B0461F8DFD6700B0FA9E /* firstLine.png */; };
 		32B0B0531F8DFD6800B0FA9E /* maskImage.png in Resources */ = {isa = PBXBuildFile; fileRef = 32B0B0471F8DFD6700B0FA9E /* maskImage.png */; };
 		32B0B0541F8DFD6800B0FA9E /* secondLine.png in Resources */ = {isa = PBXBuildFile; fileRef = 32B0B0481F8DFD6800B0FA9E /* secondLine.png */; };
-		32C6C0451F8F3208000FAE22 /* PoemDB.sqlite in Resources */ = {isa = PBXBuildFile; fileRef = 32C6C0441F8F3208000FAE22 /* PoemDB.sqlite */; };
 		32C6C05B1F8F3585000FAE22 /* FMDBHelp.m in Sources */ = {isa = PBXBuildFile; fileRef = 32C6C0511F8F3585000FAE22 /* FMDBHelp.m */; };
 		32C6C05C1F8F3585000FAE22 /* JMCircleAnimationView.m in Sources */ = {isa = PBXBuildFile; fileRef = 32C6C0531F8F3585000FAE22 /* JMCircleAnimationView.m */; };
 		32C6C05D1F8F3585000FAE22 /* libOlamiRecognizer.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 32C6C0541F8F3585000FAE22 /* libOlamiRecognizer.a */; };
@@ -40,6 +39,7 @@
 		32C6C07A1F8F61C4000FAE22 /* YSCVolumeQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 32C6C0771F8F61C4000FAE22 /* YSCVolumeQueue.m */; };
 		32C6C07B1F8F61C4000FAE22 /* YSCVoiceWaveView.m in Sources */ = {isa = PBXBuildFile; fileRef = 32C6C0781F8F61C4000FAE22 /* YSCVoiceWaveView.m */; };
 		32C6C07E1F8F6239000FAE22 /* VoiceView.m in Sources */ = {isa = PBXBuildFile; fileRef = 32C6C07C1F8F6238000FAE22 /* VoiceView.m */; };
+		32C6C0821F9095A0000FAE22 /* PoemDB.sqlite in Resources */ = {isa = PBXBuildFile; fileRef = 32C6C0811F9095A0000FAE22 /* PoemDB.sqlite */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -65,7 +65,6 @@
 		32B0B0461F8DFD6700B0FA9E /* firstLine.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = firstLine.png; sourceTree = "<group>"; };
 		32B0B0471F8DFD6700B0FA9E /* maskImage.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = maskImage.png; sourceTree = "<group>"; };
 		32B0B0481F8DFD6800B0FA9E /* secondLine.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = secondLine.png; sourceTree = "<group>"; };
-		32C6C0441F8F3208000FAE22 /* PoemDB.sqlite */ = {isa = PBXFileReference; lastKnownFileType = file; path = PoemDB.sqlite; sourceTree = "<group>"; };
 		32C6C0501F8F3585000FAE22 /* FMDBHelp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FMDBHelp.h; sourceTree = "<group>"; };
 		32C6C0511F8F3585000FAE22 /* FMDBHelp.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FMDBHelp.m; sourceTree = "<group>"; };
 		32C6C0521F8F3585000FAE22 /* JMCircleAnimationView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JMCircleAnimationView.h; sourceTree = "<group>"; };
@@ -95,6 +94,7 @@
 		32C6C07C1F8F6238000FAE22 /* VoiceView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VoiceView.m; sourceTree = "<group>"; };
 		32C6C07D1F8F6239000FAE22 /* VoiceView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VoiceView.h; sourceTree = "<group>"; };
 		32C6C0801F8F62AE000FAE22 /* Macro.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Macro.h; sourceTree = "<group>"; };
+		32C6C0811F9095A0000FAE22 /* PoemDB.sqlite */ = {isa = PBXFileReference; lastKnownFileType = file; path = PoemDB.sqlite; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -128,8 +128,8 @@
 		32B0B0211F8DFCCE00B0FA9E /* Poem */ = {
 			isa = PBXGroup;
 			children = (
+				32C6C0811F9095A0000FAE22 /* PoemDB.sqlite */,
 				32C6C04F1F8F3585000FAE22 /* Helper */,
-				32C6C0441F8F3208000FAE22 /* PoemDB.sqlite */,
 				32B0B03B1F8DFD6700B0FA9E /* resource */,
 				32B0B0221F8DFCCE00B0FA9E /* AppDelegate.h */,
 				32B0B0231F8DFCCE00B0FA9E /* AppDelegate.m */,
@@ -293,7 +293,7 @@
 				32B0B04E1F8DFD6800B0FA9E /* speak@2x.png in Resources */,
 				32B0B0511F8DFD6800B0FA9E /* fill.png in Resources */,
 				32B0B04C1F8DFD6800B0FA9E /* mainBackground@3x.png in Resources */,
-				32C6C0451F8F3208000FAE22 /* PoemDB.sqlite in Resources */,
+				32C6C0821F9095A0000FAE22 /* PoemDB.sqlite in Resources */,
 				32B0B0321F8DFCCE00B0FA9E /* LaunchScreen.storyboard in Resources */,
 				32B0B0501F8DFD6800B0FA9E /* circleBackground.png in Resources */,
 				32B0B0531F8DFD6800B0FA9E /* maskImage.png in Resources */,

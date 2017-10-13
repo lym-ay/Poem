@@ -8,7 +8,7 @@
 
 #import "ViewController.h"
 #import "Macro.h"
-#import "PoemData.h"
+
 #import "JMCircleAnimationView.h"
 #import "VoiceView.h"
 #import "MBProgressHUD.h"
@@ -18,7 +18,7 @@
     MBProgressHUD *hub;
 }
 @property (weak, nonatomic) IBOutlet UITextView *textView;
-@property (nonatomic, strong) PoemData *poemData;
+
 @property (nonatomic, strong) JMCircleAnimationView* circleView;//语音识别的动画
 @property (weak, nonatomic) IBOutlet UIButton *voiceButton;
 @property (weak, nonatomic) IBOutlet UIView *voiceBackView;
@@ -33,8 +33,7 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
     
-    _poemData =[[PoemData alloc] init];
-    _poemData.tableName =@"songci";
+    
     
     [self setupUI];
     
@@ -89,6 +88,30 @@
 #pragma mark --Voice delegate
 - (void)onUpdateVolume:(float)volume {
     
+}
+
+- (void)onResult:(NSArray *)result {
+    //如果是一首诗，直接展示
+    if (result.count == 1) {
+        NSDictionary *resultDictionary = result[0];
+        NSString *title = [resultDictionary objectForKey:@"title"];
+        NSString *content = [resultDictionary objectForKey:@"content"];
+        NSString *explanation = [resultDictionary objectForKey:@"explanation"];
+        NSString *appreciation = [resultDictionary objectForKey:@"appreciation"];
+        NSString *author = [resultDictionary objectForKey:@"author"];
+        NSString *allString = [NSString stringWithFormat:@"%@\n%@%@%@%@",title,author,content,explanation,appreciation];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            NSAttributedString *attributedString = [[NSAttributedString alloc] initWithData:[allString dataUsingEncoding:NSUnicodeStringEncoding] options:@{ NSDocumentTypeDocumentAttribute: NSHTMLTextDocumentType } documentAttributes:nil error:nil];
+                _textView.attributedText = attributedString;
+        });
+        
+        
+    }else{
+        for (NSDictionary *resultDictionary in result) {
+            NSString *title = [resultDictionary objectForKey:@"title"];
+            NSString *author = [resultDictionary objectForKey:@"author"];
+        }
+    }
 }
 
 - (void)onEndOfSpeech {
