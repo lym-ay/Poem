@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3238D1741F95CBCF00BFD4BD /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3238D1731F95CBCF00BFD4BD /* AVFoundation.framework */; };
 		32B0B0241F8DFCCE00B0FA9E /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 32B0B0231F8DFCCE00B0FA9E /* AppDelegate.m */; };
 		32B0B0271F8DFCCE00B0FA9E /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 32B0B0261F8DFCCE00B0FA9E /* ViewController.m */; };
 		32B0B02A1F8DFCCE00B0FA9E /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 32B0B0281F8DFCCE00B0FA9E /* Main.storyboard */; };
@@ -43,6 +44,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		3238D1731F95CBCF00BFD4BD /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		32B0B01F1F8DFCCE00B0FA9E /* Poem.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Poem.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		32B0B0221F8DFCCE00B0FA9E /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		32B0B0231F8DFCCE00B0FA9E /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -102,6 +104,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3238D1741F95CBCF00BFD4BD /* AVFoundation.framework in Frameworks */,
 				32C6C05D1F8F3585000FAE22 /* libOlamiRecognizer.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -109,11 +112,20 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		3238D1721F95CBCE00BFD4BD /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				3238D1731F95CBCF00BFD4BD /* AVFoundation.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		32B0B0161F8DFCCE00B0FA9E = {
 			isa = PBXGroup;
 			children = (
 				32B0B0211F8DFCCE00B0FA9E /* Poem */,
 				32B0B0201F8DFCCE00B0FA9E /* Products */,
+				3238D1721F95CBCE00BFD4BD /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -469,7 +481,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 3CAWU27LX9;
+				DEVELOPMENT_TEAM = RN8YKV5B34;
 				INFOPLIST_FILE = Poem/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -488,7 +500,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 3CAWU27LX9;
+				DEVELOPMENT_TEAM = RN8YKV5B34;
 				INFOPLIST_FILE = Poem/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";

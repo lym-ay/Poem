@@ -16,12 +16,7 @@
 #define OLACUSID   @"11a4afa5-d461-47f6-917b-8f8eaa9cb526"
 
 
-typedef NS_ENUM(NSInteger, ProgramType) {
-    CHANNEL,
-    PROGRAMTYPE,
-    PROGRAMSUBTYPE,
-    PROGRAMTIME
-};
+
 
 
 @interface VoiceView () <OlamiRecognizerDelegate> {
@@ -150,7 +145,7 @@ typedef NS_ENUM(NSInteger, ProgramType) {
             }
             
         }else{
-            [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:@"noresult" object:nil userInfo:nil]];
+            
         }
     }
     
@@ -189,101 +184,135 @@ typedef NS_ENUM(NSInteger, ProgramType) {
 
 //处理modify
 - (void)processModify:(NSString*) str {
-    
-    if ([str isEqualToString:@"play"]
-        || [str isEqualToString:@"watch_channel"]
-       ) {//我要听XXX这首诗
+    NSArray *arry;
+    if ([str isEqualToString:@"play"]) {
+        _poemAction = PLAYPOEM;
         if (_slotDic.count != 0) {
-            for (NSString *name in _slotDic.allKeys) {
-                if ([name isEqualToString:@"poem"]) {
-                    NSString *value = [_slotDic objectForKey:name];
-                    NSArray * arry =[[PoemData sharedPoemData] searchTitle:value];
-                    [self.delegate onResult:arry];
+            //根据slot的值进行处理
+            switch (_slotDic.count) {
+                case 1:{
+                   
+                    if ([_slotDic.allKeys containsObject:@"poem"]) {
+                        NSString *value = [_slotDic objectForKey:@"poem"];
+                        arry =[_poemData searchPoemofTitle:value];
+                        
+                    }else if ([_slotDic.allKeys containsObject:@"poet"]){
+                        NSString *value = [_slotDic objectForKey:@"poet"];
+                        arry =[_poemData searchPoemOfPoet:value];
+                       
+                    }else if ([_slotDic.allKeys containsObject:@"dynasty"]){
+                        NSString *value = [_slotDic objectForKey:@"dynasty"];
+                        arry =[_poemData searchPoemOfDynasty:value];
+                        
+                    }
                 }
+                    
+                    break;
+                case 2:{
+                    if ([_slotDic.allKeys containsObject:@"poem"]
+                          && [_slotDic.allKeys containsObject:@"poet"])  {
+                        NSString *poem = _slotDic[@"poem"];
+                        NSString *poet = _slotDic[@"poet"];
+                        arry =[_poemData searchAuthorAndTitle:poet title:poem];
+                     
+               
+                    }else  if ([_slotDic.allKeys containsObject:@"dynasty"]) {
+                            NSString *dynasty = _slotDic[@"dynasty"];
+                            arry =[_poemData searchPoemOfDynasty:dynasty];
+                       
+                        
+                    }
+                }
+                    
+                    break;
+                    
+                default:
+                    break;
             }
+            
+        }else{//如果slot的值为空，则是随机选取10首诗歌发出去
+            arry = [_poemData searchPoem];
         }
-       
-       
-    }else if ([str isEqualToString:@"rules"]){
         
+        NSDictionary *dic;
+        if (arry.count != 0) {
+            NSInteger count = arry.count;
+            NSInteger index = arc4random()%count;
+            dic = arry[index];
+        }
+        [self.delegate onResult:dic];
+       
+    }else if ([str isEqualToString:@"query_poet"]){//查询诗人
+        _poemAction = QUERYPOET;
+        if ([_slotDic.allKeys containsObject:@"dynasty"]) {
+             NSString *value = _slotDic[@"dynasty"];
+            arry =[_poemData searchPoetOfDynasty:value];
+        }else if ([_slotDic.allKeys containsObject:@"content"]) {
+            NSString *value = _slotDic[@"content"];
+             arry =[_poemData searchPoetOfContent:value];
+        }else if ([_slotDic.allKeys containsObject:@"poet"]) {
+            NSString *value = _slotDic[@"poet"];
+            arry =[_poemData searchPoetOfContent:value];
+        }
         
-    }else if ([str isEqualToString:@"query_tvplay"]||
-              [str isEqualToString:@"can_tvplay"]||
-              [str isEqualToString:@"recommend_tvplay"]||
-              [str isEqualToString:@"recommend_new_tvplay"]||
-              [str isEqualToString:@"query_tvplay_play"]
-              ){//询问分类
-        if (_slotDic.count != 0) {
+        NSArray *resultArray = [self processResult:arry type:@"author"];
+        
+        [self.delegate queryResult:resultArray];
+        
+    }else if ([str isEqualToString:@"query_poem"]){//查询诗歌
+        _poemAction = QUERYPOEM;
+        if ([_slotDic.allKeys containsObject:@"dynasty"]) {
+            NSString *value = _slotDic[@"dynasty"];
            
-        }else{//我要看电视剧之类的大分类
-        }
+            arry =[_poemData searchPoemOfDynasty:value];
+        }else if ([_slotDic.allKeys containsObject:@"content"]) {
+             NSString *value = _slotDic[@"content"];
             
+            arry =[_poemData searchPoemOfContent:value];
+        }else if ([_slotDic.allKeys containsObject:@"poet"]) {
+             NSString *value = _slotDic[@"poet"];
+            arry =[_poemData searchPoemOfPoet:value];
+        }
+        
+        NSArray *resultArray = [self processResult:arry type:@"title"];
+        
+        [self.delegate queryResult:resultArray];
+
         
         
-    }
-    ////////////query_tvshow modify////////////////////////
-    else if ([str isEqualToString:@"query_tvshow"]||
-             [str isEqualToString:@"recommend_tvshow"]||
-             [str isEqualToString:@"can_tvshow"]||
-             [str isEqualToString:@"recommend_new_tvshow"]||
-             [str isEqualToString:@"query_tvshow_play"]){
-        if (_slotDic.count != 0) {
             
-        }
+    }else if ([str isEqualToString:@"query_poet_poem"]){//根据诗人和作品查询
+        _poemAction = PLAYPOEM;
+        NSString *poem = _slotDic[@"poem"];
+        NSString *poet = _slotDic[@"poet"];
+        arry =[_poemData searchAuthorAndTitle:poet title:poem];
         
-    }else if ([str isEqualToString:@"query_tvshow_play"]){
-        if (_slotDic.count != 0) {
-            for (NSString *name in _slotDic.allKeys) {
-            }
+        NSDictionary *dic;
+        if (arry.count != 0) {
+            NSInteger count = arry.count;
+            NSInteger index = arc4random()%count;
+            dic = arry[index];
         }
+        [self.delegate onResult:dic];
+
+            
     }
     
-    else if ([str isEqualToString:@"watch_a_program"]){//查看具体的节目
-       
-    }
-    /////////////////////换台//////////////////////////////////////
-    else if ([str isEqualToString:@"flip_number"]){//转到xx台
-        
-
-    }else if ([str isEqualToString:@"flip_channel_next"]){//下一个台
-        
-
-        
-    }else if ([str isEqualToString:@"flip_channel_last"]){//上一个台
-        
-
-    }else if ([str isEqualToString:@"flip_channel"]){//换一个台
-        
-        
-    }
-    ///////////////控制音量/////////////////////////////
-    else if ([str isEqualToString:@"turn_volume_up"]){//声音调大一点
-       
-    }else if ([str isEqualToString:@"turn_volume_down"]){//声音调小一点
-        
-    }else if ([str isEqualToString:@"turn_volume_muteon"]){//设为静音
-        
-    }
-  
-    else if ([str isEqualToString:@"query_parade_name_time"]){
-        
-    }
     
-    else if ([str isEqualToString:@"function"]){
-        
-    }
-  
-    else if ([str isEqualToString:@"query_movie"]||
-             [str isEqualToString:@"recommend"]||
-             [str isEqualToString:@"recommend_new "]||
-             [str isEqualToString:@"recommend_cinema"]||
-             [str isEqualToString:@"can"]){
-        
-    }
    
     
-
     
+}
+
+
+- (NSArray*)processResult:(NSArray*)result type:(NSString*)type{
+    NSMutableArray *arry = [[NSMutableArray alloc] init];
+    for (NSDictionary *dic in result) {
+        NSString *value = dic[type];
+        [arry addObject:value];
+    }
+    
+    return arry;
 }
  
 
@@ -309,18 +338,18 @@ typedef NS_ENUM(NSInteger, ProgramType) {
 - (void)processSemantic:(NSDictionary*)semanticDic {
     NSString *input = [semanticDic objectForKey:@"input"];
     if (input) {
-        
+        [self.delegate intputString:input];
     }
     
     NSArray *slot = [semanticDic objectForKey:@"slots"];
     
     [_slotDic removeAllObjects];
     if (slot.count != 0) {
-        for (NSDictionary *dic in slot) {
+        for (NSDictionary *dic in slot) { 
             NSString* name = [dic objectForKey:@"name"];
-            NSString* val = [dic objectForKey:@"value"];
-            [_slotDic setObject:val forKey:name];//保存slot的值和value
-       }
+            NSString* value = [dic objectForKey:@"value"];
+            [_slotDic setObject:value forKey:name];//保存slot的值和value
+        }
         
     }
     
@@ -344,9 +373,8 @@ typedef NS_ENUM(NSInteger, ProgramType) {
 
 
 
-- (void)searchText:(NSNotification*)id {
-    NSString *text = (NSString*)id.object;
-    [olamiRecognizer sendText:text];
+- (void)sendText:(NSString *)text  {
+  [olamiRecognizer sendText:text];
 }
 
 
@@ -376,6 +404,8 @@ typedef NS_ENUM(NSInteger, ProgramType) {
 - (void)dealloc {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
+
+ 
 
 
 

@@ -32,14 +32,14 @@ fprintf(stderr,"%s %s:%d %s\n",[str UTF8String], [[[NSString stringWithUTF8Strin
 @implementation PoemData
 
 #pragma mark - 单例
-+ (PoemData*)sharedPoemData {
-    static PoemData *help = nil;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        help = [[PoemData alloc] init];
-    });
-    return help;
-}
+//+ (PoemData*)sharedPoemData {
+//    static PoemData *help = nil;
+//    static dispatch_once_t onceToken;
+//    dispatch_once(&onceToken, ^{
+//        help = [[PoemData alloc] init];
+//    });
+//    return help;
+//}
 
 - (id)init {
     if (self = [super init]) {
@@ -94,9 +94,69 @@ fprintf(stderr,"%s %s:%d %s\n",[str UTF8String], [[[NSString stringWithUTF8Strin
 }
 
 
-
-- (NSArray *)searchTitle:(NSString*)title{
+//根据名称查询诗歌
+- (NSArray *)searchPoemofTitle:(NSString*)title{
     NSString *searchSql = [NSString stringWithFormat:@"select title,content,explanation,appreciation,author from '%@' where title like  '%%%@%%'limit 10",_tableName,title];
+    NSArray *arry = [[FMDBHelp sharedFMDBHelp] qureyWithSql:searchSql];
+    return arry;
+}
+
+
+//根据诗人和诗歌查询
+- (NSArray *)searchAuthorAndTitle:(NSString*)author title:(NSString*)title{
+    NSString *searchSql = [NSString stringWithFormat:@"select title,content,explanation,appreciation,author from '%@' where author like  '%%%@%%' and title like '%%%@%%' limit 10",_tableName,author,title];
+    NSArray *arry = [[FMDBHelp sharedFMDBHelp] qureyWithSql:searchSql];
+    return arry;
+}
+
+
+//随机查询诗歌
+- (NSArray *)searchPoem{
+    NSString *searchSql = [NSString stringWithFormat:@"select title,content,explanation,appreciation,author from '%@' limit 50",_tableName];
+    NSArray *arry = [[FMDBHelp sharedFMDBHelp] qureyWithSql:searchSql];
+    return arry;
+}
+
+//////////////////////////////////////////////////
+//按照朝代查询诗人
+- (NSArray *)searchPoetOfDynasty:(NSString*)dynasty{
+    NSString *searchSql = [NSString stringWithFormat:@"select distinct author from '%@' where dynasty='%@'",_tableName,dynasty];
+    NSArray *arry = [[FMDBHelp sharedFMDBHelp] qureyWithSql:searchSql];
+    return arry;
+}
+
+//按照诗歌内容查询诗人
+- (NSArray *)searchPoetOfContent:(NSString*)content{
+    NSString *searchSql = [NSString stringWithFormat:@"select author from '%@' where content like  '%%%@%%'",_tableName,content];
+    NSArray *arry = [[FMDBHelp sharedFMDBHelp] qureyWithSql:searchSql];
+    return arry;
+    
+}
+//按照诗名查询诗人
+- (NSArray *)searchPoetOfPoem:(NSString*)poem{
+    NSString *searchSql = [NSString stringWithFormat:@"select author from '%@' where poem like  '%%%@%%'",_tableName,poem];
+    NSArray *arry = [[FMDBHelp sharedFMDBHelp] qureyWithSql:searchSql];
+    return arry;
+}
+//////////////////////////////////////////////
+
+//按照诗句查询诗歌
+- (NSArray *)searchPoemOfContent:(NSString*)content{
+    NSString *searchSql = [NSString stringWithFormat:@"select title,content,explanation,appreciation,author from '%@' where content like  '%%%@%%' limit 10",_tableName,content];
+    NSArray *arry = [[FMDBHelp sharedFMDBHelp] qureyWithSql:searchSql];
+    return arry;
+}
+
+//按照诗人查询诗歌
+- (NSArray *)searchPoemOfPoet:(NSString*)poet{
+    NSString *searchSql = [NSString stringWithFormat:@"select title,content,explanation,appreciation,author from '%@' where author = '%@' limit 50",_tableName,poet];
+    NSArray *arry = [[FMDBHelp sharedFMDBHelp] qureyWithSql:searchSql];
+    return arry;
+}
+
+//按照朝代查询诗歌
+- (NSArray *)searchPoemOfDynasty:(NSString*)dynasty{
+    NSString *searchSql = [NSString stringWithFormat:@"select title,content,explanation,appreciation,author from '%@' where dynasty = '%@'limit 50",_tableName,dynasty];
     NSArray *arry = [[FMDBHelp sharedFMDBHelp] qureyWithSql:searchSql];
     return arry;
 }
@@ -104,5 +164,9 @@ fprintf(stderr,"%s %s:%d %s\n",[str UTF8String], [[[NSString stringWithUTF8Strin
 - (int)isExistTable:(NSString *)tableName {
     return [[FMDBHelp sharedFMDBHelp] isExistTable:tableName];
 }
+
+
+
+ 
 
 @end

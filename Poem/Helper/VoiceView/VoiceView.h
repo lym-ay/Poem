@@ -10,10 +10,23 @@
 //这个页面定义了 语音输入的页面
 #import <UIKit/UIKit.h>
 
+typedef NS_ENUM(NSInteger, PoemAction) {
+    PLAYPOEM,
+    QUERYPOEM,
+    QUERYPOET
+};
+
 @protocol VoiceViewDelegate <NSObject>
 
-//返回结果
-- (void)onResult:(NSArray*)result;
+//intputString
+- (void)intputString:(NSString*)input;
+
+//返回查询的结果
+- (void)queryResult:(NSArray*)arry;
+
+//返回诗歌具体内容
+- (void)onResult:(NSDictionary*)result;
+
 
 //取消本次会话
 - (void)onCancel;
@@ -45,6 +58,8 @@ typedef void (^CloseViewBlock)(void);
 @property (nonatomic, strong) CloseViewBlock block;
 @property (nonatomic, weak) id<VoiceViewDelegate> delegate;
 @property (nonatomic, assign) BOOL isRecording;
+@property (nonatomic, assign) PoemAction poemAction;
+- (void)sendText:(NSString*)text;//发送文本请求
 - (void)start;
 - (void)stop;
  
