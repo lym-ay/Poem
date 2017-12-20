@@ -77,13 +77,6 @@ static NSString   *poemCell              =  @"PoemTableViewCell";
         return;
     }
     
-    //启用audio session
-    ret = [[AVAudioSession sharedInstance] setActive:YES error:nil];
-    if (!ret)
-    {
-        NSLog(@"启动失败");
-        return;
-    }
     AVSpeechUtterance *utterance = [[AVSpeechUtterance alloc] initWithString:text];//需要转换的文字
     
     utterance.rate=0.5;// 设置语速，范围0-1，注意0最慢，1最快；AVSpeechUtteranceMinimumSpeechRate最慢，AVSpeechUtteranceMaximumSpeechRate最快
@@ -248,6 +241,9 @@ static NSString   *poemCell              =  @"PoemTableViewCell";
         hub.label.text = @"网络出错，请稍后再试";
         hub.mode = MBProgressHUDModeText;
         [hub showAnimated:YES];
+        [self.circleView removeFromSuperview];
+        self.circleView = nil;
+        [_voiceButton setEnabled:YES];
         
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
             [hub hideAnimated:YES];
@@ -256,7 +252,7 @@ static NSString   *poemCell              =  @"PoemTableViewCell";
     });
     
     if (error) {
-        NSSLog(@"voice reconginze error is %@",error.localizedDescription);
+        NSSLog(@"%@",error.localizedDescription);
     }
 }
 
